@@ -3,7 +3,7 @@
 #include <QOpenGLTexture>
 #include <QMouseEvent>
 
-#include "headers/glwidget.h"
+#include "headers/cubes.h"
 
 Cubes::Cubes()
     : xRot(0),
@@ -30,7 +30,7 @@ void Cubes::rotateBy(int xAngle, int yAngle, int zAngle)
   //update();
 }
 
-void Cubes::initializeGL()
+void Cubes::initialize()
 {
   initializeOpenGLFunctions();
 
@@ -76,7 +76,7 @@ void Cubes::initializeGL()
   program->setUniformValue("texture", 0);
 }
 
-void Cubes::paintGL()
+void Cubes::paint()
 {
   glClearColor(0.5f, 0.5f, 0.7f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

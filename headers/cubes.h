@@ -15,10 +15,8 @@ public:
   ~Cubes();
 
   void rotateBy(int xAngle, int yAngle, int zAngle);
-
-protected:
-  void initializeGL();
-  void paintGL();
+  void initialize();
+  void paint();
 
 private:
   void makeObject();
