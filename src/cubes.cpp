@@ -6,10 +6,7 @@
 #include "headers/cubes.h"
 
 Cubes::Cubes()
-    : xRot(0),
-      yRot(0),
-      zRot(0),
-      program(0)
+    : xRot(0), yRot(0), zRot(0), program(0), CUBES_NUM(6)
 {
   memset(textures, 0, sizeof(textures));
 }
@@ -22,7 +19,7 @@ Cubes::~Cubes()
   delete program;
 }
 
-void Cubes::rotateBy(int xAngle, int yAngle, int zAngle)
+void Cubes::rotateBy(const int xAngle, const int yAngle, const int zAngle)
 {
   xRot += xAngle;
   yRot += yAngle;
@@ -94,7 +91,7 @@ void Cubes::paint()
   program->setAttributeBuffer(PROGRAM_VERTEX_ATTRIBUTE, GL_FLOAT, 0, 3, 5 * sizeof(GLfloat));
   program->setAttributeBuffer(PROGRAM_TEXCOORD_ATTRIBUTE, GL_FLOAT, 3 * sizeof(GLfloat), 2, 5 * sizeof(GLfloat));
 
-  for(int i = 0; i < 6; ++i)
+  for(int i = 0; i < CUBES_NUM; ++i)
   {
     textures[i]->bind();
     glDrawArrays(GL_TRIANGLE_FAN, i * 4, 4);
@@ -116,7 +113,7 @@ void Cubes::makeObject()
      { { -1, -1, +1 }, { +1, -1, +1 }, { +1, +1, +1 }, { -1, +1, +1 } }
   };
 
-  for (int j = 0; j < SIDES; ++j)
+  for (int j = 0; j < CUBES_NUM; ++j)
      textures[j] = new QOpenGLTexture(QImage(QString(":/images/side%1.png").arg(j + 1)).mirrored());
 
   QVector<GLfloat> vertData;

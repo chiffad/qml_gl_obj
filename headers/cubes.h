@@ -14,7 +14,7 @@ public:
   explicit Cubes();
   ~Cubes();
 
-  void rotateBy(int xAngle, int yAngle, int zAngle);
+  void rotateBy(const int xAngle, const int yAngle, const int zAngle);
   void initialize();
   void paint();
 
@@ -25,6 +25,7 @@ private:
   int xRot;
   int yRot;
   int zRot;
+  const int CUBES_NUM;
   QOpenGLTexture *textures[6];
   QOpenGLShaderProgram *program;
 };
