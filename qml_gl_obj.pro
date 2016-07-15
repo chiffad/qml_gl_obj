@@ -1,7 +1,7 @@
 TEMPLATE = app
 
-QT += qml quick \
-      widgets
+QT += qml quick
+
 CONFIG += c++14
 
 HEADERS += headers/glwidget.h
