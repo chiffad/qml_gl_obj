@@ -1,12 +1,12 @@
 #include <QOpenGLShaderProgram>
+#include <QOpenGLShader>
 #include <QOpenGLTexture>
 #include <QMouseEvent>
+
 #include "headers/glwidget.h"
 
-GLWidget::GLWidget(QWidget *parent)
-    : QOpenGLWidget(parent),
-      clearColor(Qt::black),
-      xRot(0),
+Cubes::Cubes()
+    : xRot(0),
       yRot(0),
       zRot(0),
       program(0)
@@ -14,43 +14,23 @@ GLWidget::GLWidget(QWidget *parent)
   memset(textures, 0, sizeof(textures));
 }
 
-GLWidget::~GLWidget()
+Cubes::~Cubes()
 {
-  makeCurrent();
-  vbo.destroy();
-
   for(auto &i : textures)
     delete i;
 
   delete program;
-  doneCurrent();
 }
 
-QSize GLWidget::minimumSizeHint() const
-{
-  return QSize(50, 50);
-}
-
-QSize GLWidget::sizeHint() const
-{
-  return QSize(200, 200);
-}
-
-void GLWidget::rotateBy(int xAngle, int yAngle, int zAngle)
+void Cubes::rotateBy(int xAngle, int yAngle, int zAngle)
 {
   xRot += xAngle;
   yRot += yAngle;
   zRot += zAngle;
-  update();
+  //update();
 }
 
-void GLWidget::setClearColor(const QColor &color)
-{
-  clearColor = color;
-  update();
-}
-
-void GLWidget::initializeGL()
+void Cubes::initializeGL()
 {
   initializeOpenGLFunctions();
 
@@ -62,7 +42,7 @@ void GLWidget::initializeGL()
 #define PROGRAM_VERTEX_ATTRIBUTE 0
 #define PROGRAM_TEXCOORD_ATTRIBUTE 1
 
-  QOpenGLShader *vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
+  QOpenGLShader *vshader = new QOpenGLShader(QOpenGLShader::Vertex, program);
   const char *vsrc =
       "attribute highp vec4 vertex;\n"
       "attribute mediump vec4 texCoord;\n"
@@ -75,7 +55,7 @@ void GLWidget::initializeGL()
       "}\n";
   vshader->compileSourceCode(vsrc);
 
-  QOpenGLShader *fshader = new QOpenGLShader(QOpenGLShader::Fragment, this);
+  QOpenGLShader *fshader = new QOpenGLShader(QOpenGLShader::Fragment, program);
   const char *fsrc =
       "uniform sampler2D texture;\n"
       "varying mediump vec4 texc;\n"
@@ -96,9 +76,9 @@ void GLWidget::initializeGL()
   program->setUniformValue("texture", 0);
 }
 
-void GLWidget::paintGL()
+void Cubes::paintGL()
 {
-  glClearColor(clearColor.redF(), clearColor.greenF(), clearColor.blueF(), clearColor.alphaF());
+  glClearColor(0.5f, 0.5f, 0.7f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   QMatrix4x4 m;
@@ -121,36 +101,7 @@ void GLWidget::paintGL()
   }
 }
 
-void GLWidget::resizeGL(int width, int height)
-{
-  int side = qMin(width, height);
-  glViewport((width - side) / 2, (height - side) / 2, side, side);
-}
-
-void GLWidget::mousePressEvent(QMouseEvent *event)
-{
-  lastPos = event->pos();
-}
-
-void GLWidget::mouseMoveEvent(QMouseEvent *event)
-{
-  int dx = event->x() - lastPos.x();
-  int dy = event->y() - lastPos.y();
-
-  if(event->buttons() & Qt::LeftButton)
-    rotateBy(8 * dy, 8 * dx, 0);
-  else if (event->buttons() & Qt::RightButton)
-    rotateBy(8 * dy, 0, 8 * dx);
-
-  lastPos = event->pos();
-}
-
-void GLWidget::mouseReleaseEvent(QMouseEvent * /* event */)
-{
-
-}
-
-void GLWidget::makeObject()
+void Cubes::makeObject()
 {
   const int SIDES = 6;
   const int VERTEX = 4;
@@ -180,8 +131,4 @@ void GLWidget::makeObject()
       vertData.append(j == 0 || j == 3);
       vertData.append(j == 0 || j == 1);
      }
-
- vbo.create();
- vbo.bind();
- vbo.allocate(vertData.constData(), vertData.count() * sizeof(GLfloat));
 }
