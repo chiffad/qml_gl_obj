@@ -36,7 +36,7 @@ void Cubes::initialize()
 
   makeObject();
 
-  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_DEPTH_TEST);//if wouldn't turn on, obj wouldn't close each other
   glEnable(GL_CULL_FACE);
 
 #define PROGRAM_VERTEX_ATTRIBUTE 0
