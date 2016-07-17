@@ -1,7 +1,7 @@
 #include <QGuiApplication>
 #include <QtQuick/QQuickView>
 #include <QQmlApplicationEngine>
-#include "headers/fb_obj.h"
+#include "headers/fbo_obj.h"
 
 int main(int argc, char *argv[])
 {
