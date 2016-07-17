@@ -89,11 +89,11 @@ void LogoRenderer::render()
   glEnable(GL_DEPTH_TEST);
 
   QMatrix4x4 modelview;
-  modelview.rotate(m_fAngle, 0.0f, 0.0f, 0.0f);
-  modelview.rotate(m_fAngle, 0.0f, 0.0f, 0.0f);
-  modelview.rotate(m_fAngle, 0.0f, 0.0f, 0.0f);
+  modelview.rotate(m_fAngle, 0.0f, 1.0f, 0.0f);
+  modelview.rotate(m_fAngle, 1.0f, 0.0f, 0.0f);
+  modelview.rotate(m_fAngle, 0.0f, 0.0f, 1.0f);
   modelview.scale(m_fScale);
-  modelview.translate(0.0f, 0.0f, 0.0f);
+  modelview.translate(0.0f, -0.2f, 0.0f);
 
   program1.bind();
   program1.setUniformValue(matrixUniform1, modelview);
