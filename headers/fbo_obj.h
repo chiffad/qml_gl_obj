@@ -2,7 +2,7 @@
 #define FBOINSGRENDERER_H
 
 #include <QtQuick/QQuickFramebufferObject>
-#include "headers/cubes.h"
+#include "headers/logorenderer.h"
 
 class Fbo_obj : public QQuickFramebufferObject
 {
@@ -11,16 +11,5 @@ public:
   Renderer *createRenderer() const;
 
   Q_INVOKABLE void pressEvent();
-};
-
-class Fbo_renderer : public QQuickFramebufferObject::Renderer
-{
-public:
-  Fbo_renderer();
-  void render();
-  QOpenGLFramebufferObject* createFramebufferObject(const QSize &size);
-
-private:
-  Cubes cubes;
 };
 #endif
