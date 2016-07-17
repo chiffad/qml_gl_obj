@@ -83,7 +83,8 @@ Window {
           Renderer
           {
             id: renderer
-            width: 100; height: 40
+
+            width: 100; height: 100
 
             MouseArea
             {
