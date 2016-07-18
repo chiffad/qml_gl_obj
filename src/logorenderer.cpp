@@ -20,10 +20,6 @@ void LogoRenderer::paint()
   program.setAttributeArray(vertexAttr, vertices.constData());
   program.setAttributeArray(normalAttr, normals.constData());
 
-
-  qDebug()<<vertices.size();
-  qDebug()<<normals.size();
-
   glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 
   program.disableAttributeArray(normalAttr);
@@ -80,8 +76,6 @@ void LogoRenderer::initialize()
 
 void LogoRenderer::render()
 {
-
-    //qDebug()<<"render";
   glDepthMask(true);
 
   glClearColor(0.5f, 0.5f, 0.7f, 1.0f);
@@ -116,7 +110,6 @@ void LogoRenderer::createGeometry()
 {
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
-  qDebug()<<"createGeometry";
   vertices.clear();
   normals.clear();
 
@@ -202,48 +195,4 @@ void LogoRenderer::createGeometry()
   vertices.append(v1);//Right
   vertices.append(v6);
   vertices.append(v5);
-
-  //for(int i = 0; i < 4; ++i)
-    //normals.append(QVector3D(0,1,0));
-  /*vertices.append(v1);
-  vertices.append(v2);
-  vertices.append(v5);
-  vertices.append(v6);*/
-
- /* for(int i = 0; i < 4; ++i)
-    normals.append(QVector3D(1,0,0));
-  vertices.append(v4);
-  vertices.append(v2);
-  vertices.append(v3);
-  vertices.append(v1);
-
-  for(int i = 0; i < 4; ++i)
-    normals.append(QVector3D(0,0,-1));
-  vertices.append(v4);
-  vertices.append(v2);
-  vertices.append(v8);
-  vertices.append(v6);
-
-  for(int i = 0; i < 4; ++i)
-    normals.append(QVector3D(0,-1,0));
-  vertices.append(v3);
-  vertices.append(v4);
-  vertices.append(v7);
-  vertices.append(v8);
-
-  for(int i = 0; i < 4; ++i)
-    normals.append(QVector3D(-1,0,0));
-  vertices.append(v8);
-  vertices.append(v6);
-  vertices.append(v7);
-  vertices.append(v5);
-
-  for(int i = 0; i < 4; ++i)
-    normals.append(QVector3D(0,0,+1));
-  vertices.append(v3);
-  vertices.append(v1);
-  vertices.append(v7);
-  vertices.append(v5);*/
-
-  //normals.append(QVector3D(-1,0,0));
 }
