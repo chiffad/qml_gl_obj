@@ -169,6 +169,14 @@ void LogoRenderer::quad(qreal x1, qreal y1, qreal x2, qreal y2, qreal x3, qreal 
   vertices << QVector3D(x4, y4, -0.05f);
   vertices << QVector3D(x2, y2, -0.05f);
 
+  vertices << QVector3D(x4, y4, 0.05f);
+  vertices << QVector3D(x2, y2, 0.05f);
+  vertices << QVector3D(x1, y1, 0.05f);
+
+  vertices << QVector3D(x2, y2, 0.05f);
+  vertices << QVector3D(x4, y4, 0.05f);
+  vertices << QVector3D(x3, y3, 0.05f);
+
   QVector3D n = QVector3D::normal
       (QVector3D(x2 - x1, y2 - y1, 0.0f), QVector3D(x4 - x1, y4 - y1, 0.0f));
 
@@ -179,14 +187,6 @@ void LogoRenderer::quad(qreal x1, qreal y1, qreal x2, qreal y2, qreal x3, qreal 
   normals << n;
   normals << n;
   normals << n;
-
-  vertices << QVector3D(x4, y4, 0.05f);
-  vertices << QVector3D(x2, y2, 0.05f);
-  vertices << QVector3D(x1, y1, 0.05f);
-
-  vertices << QVector3D(x2, y2, 0.05f);
-  vertices << QVector3D(x4, y4, 0.05f);
-  vertices << QVector3D(x3, y3, 0.05f);
 
   n = QVector3D::normal
       (QVector3D(x2 - x4, y2 - y4, 0.0f), QVector3D(x1 - x4, y1 - y4, 0.0f));
