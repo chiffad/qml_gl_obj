@@ -75,27 +75,29 @@ Window {
       }
       "
   }
-  Row {
-      Repeater {
-          model: 3
+  Row
+  {
+    Repeater
+    {
+      model: 1
 
-          delegate:
-          Renderer
-          {
-            id: renderer
+      delegate:
+      Renderer
+      {
+        id: renderer
 
-            width: 100; height: 100
+        width: 400; height: 400
 
-            MouseArea
-            {
-              id: mouse
-              anchors.fill: parent
+        MouseArea
+        {
+          id: mouse
+          anchors.fill: parent
 
-              onClicked:
-                renderer.pressEvent()
-            }
-          }
+          onClicked:
+            renderer.pressEvent()
+        }
       }
+    }
   }
 
   // Just to show something interesting
