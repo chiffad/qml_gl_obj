@@ -18,7 +18,7 @@ public:
   void initialize();
 
 private:
-  void paintQtLogo();
+  void paint();
   void createGeometry();
 
 private:
