@@ -2,7 +2,7 @@
 #include <QtQuick/QQuickWindow>
 #include <qsgsimpletexturenode.h>
 #include "headers/fb_obj.h"
-#include "headers/logorenderer.h"
+#include "headers/cube_renderer.h"
 
 Fb_obj::~Fb_obj()
 {
