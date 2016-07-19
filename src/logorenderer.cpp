@@ -11,29 +11,28 @@ LogoRenderer::~LogoRenderer()
 {
 }
 
-
 void LogoRenderer::paint()
 {
-  program.enableAttributeArray(normalAttr);
-  program.enableAttributeArray(vertexAttr);
+  m_program.enableAttributeArray(m_normalAttr);
+  m_program.enableAttributeArray(m_vertexAttr);
 
-  program.setAttributeArray(vertexAttr, vertices.constData());
-  program.setAttributeArray(normalAttr, normals.constData());
+  m_program.setAttributeArray(m_vertexAttr, m_vertices.constData());
+  m_program.setAttributeArray(m_normalAttr, m_normals.constData());
 
-  glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+  glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
 
-  program.disableAttributeArray(normalAttr);
-  program.disableAttributeArray(vertexAttr);  
+  m_program.disableAttributeArray(m_normalAttr);
+  m_program.disableAttributeArray(m_vertexAttr);
 }
 
 void LogoRenderer::initialize()
 {
   initializeOpenGLFunctions();
 
-  glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
+  glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-  QOpenGLShader *vshader1 = new QOpenGLShader(QOpenGLShader::Vertex, &program);
-  const char *vsrc1 =
+  QOpenGLShader *vshader = new QOpenGLShader(QOpenGLShader::Vertex, &m_program);
+  const char *vsrc =
     "attribute highp vec4 vertex;\n"
     "attribute mediump vec3 normal;\n"
     "uniform mediump mat4 matrix;\n"
@@ -47,38 +46,43 @@ void LogoRenderer::initialize()
     "    color = clamp(color, 0.0, 1.0);\n"
     "    gl_Position = matrix * vertex;\n"
     "}\n";
-  vshader1->compileSourceCode(vsrc1);
+  vshader->compileSourceCode(vsrc);
 
-  QOpenGLShader *fshader1 = new QOpenGLShader(QOpenGLShader::Fragment, &program);
-  const char *fsrc1 =
+  QOpenGLShader *fshader = new QOpenGLShader(QOpenGLShader::Fragment, &m_program);
+  const char *fsrc =
     "varying mediump vec4 color;\n"
     "void main(void)\n"
     "{\n"
     "    gl_FragColor = color;\n"
     "}\n";
-  fshader1->compileSourceCode(fsrc1);
+  fshader->compileSourceCode(fsrc);
 
-  program.addShader(vshader1);
-  program.addShader(fshader1);
-  program.link();
+  m_program.addShader(vshader);
+  m_program.addShader(fshader);
+  m_program.link();
 
-  vertexAttr = program.attributeLocation("vertex");
-  normalAttr = program.attributeLocation("normal");
-  matrixUniform1 = program.uniformLocation("matrix");
+  m_vertexAttr = m_program.attributeLocation("vertex");
+  m_normalAttr = m_program.attributeLocation("normal");
+  m_matrixUniform = m_program.uniformLocation("matrix");
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 
-  m_fAngle = 0;
-  m_fScale = 0.6;
+  m_angle = 0;
+  m_scale = 0.6;
   createGeometry();
+}
+
+void LogoRenderer::scale(const double sc)
+{
+  m_scale *= sc;
 }
 
 void LogoRenderer::render()
 {
   glDepthMask(true);
 
-  glClearColor(0.5f, 0.5f, 0.7f, 1.0f);
+  glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
@@ -90,28 +94,28 @@ void LogoRenderer::render()
   glEnable(GL_DEPTH_TEST);
 
   QMatrix4x4 modelview;
-  modelview.rotate(m_fAngle, 0.0f, 1.0f, 0.0f);
-  modelview.rotate(m_fAngle, 1.0f, 0.0f, 0.0f);
-  modelview.rotate(m_fAngle, 0.0f, 0.0f, 1.0f);
-  modelview.scale(m_fScale);
+  modelview.rotate(m_angle, 1.0f, 0.0f, 0.0f);
+  modelview.rotate(m_angle, 0.0f, 1.0f, 0.0f);
+  modelview.rotate(m_angle, 0.0f, 0.0f, 1.0f);
+  modelview.scale(m_scale);
   modelview.translate(0.0f, -0.2f, 0.0f);
 
-  program.bind();
-  program.setUniformValue(matrixUniform1, modelview);
+  m_program.bind();
+  m_program.setUniformValue(m_matrixUniform, modelview);
   paint();
-  program.release();
+  m_program.release();
   glDisable(GL_DEPTH_TEST);
   glDisable(GL_CULL_FACE);
 
-  m_fAngle += 1.0f;
+  m_angle += 1.0f;
 }
 
 void LogoRenderer::createGeometry()
 {
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
-  vertices.clear();
-  normals.clear();
+  m_vertices.clear();
+  m_normals.clear();
 
   const QVector3D v1 = QVector3D(+1.0f, +1.0f, +1.0f);
   const QVector3D v2 = QVector3D(+1.0f, +1.0f, -1.0f);
@@ -124,75 +128,75 @@ void LogoRenderer::createGeometry()
   const QVector3D v8 = QVector3D(-1.0f, -1.0f, -1.0f);
 
   for(int i = 0; i<3;++i)
-  normals.append(QVector3D(-1,0,0));
-  vertices.append(v8);
-  vertices.append(v7);
-  vertices.append(v5);//Back
+  m_normals.append(QVector3D(-1,0,0));
+  m_vertices.append(v8);
+  m_vertices.append(v7);
+  m_vertices.append(v5);//Back
 
   for(int i = 0; i<3;++i)
-  normals.append(QVector3D(-1,0,0));
-  vertices.append(v8);
-  vertices.append(v5);
-  vertices.append(v6);//Back
+  m_normals.append(QVector3D(-1,0,0));
+  m_vertices.append(v8);
+  m_vertices.append(v5);
+  m_vertices.append(v6);//Back
 
   for(int i = 0; i<3;++i)
-  normals.append(QVector3D(0,0,-1));
-  vertices.append(v2);
-  vertices.append(v8);
-  vertices.append(v6);//Bottom
+  m_normals.append(QVector3D(0,0,-1));
+  m_vertices.append(v2);
+  m_vertices.append(v8);
+  m_vertices.append(v6);//Bottom
 
   for(int i = 0; i<3;++i)
-  normals.append(QVector3D(0,0,-1));
-  vertices.append(v2);
-  vertices.append(v4);
-  vertices.append(v8);//Bottom
+  m_normals.append(QVector3D(0,0,-1));
+  m_vertices.append(v2);
+  m_vertices.append(v4);
+  m_vertices.append(v8);//Bottom
 
   for(int i = 0; i<3;++i)
-  normals.append(QVector3D(0,-1,0));
-  vertices.append(v3);
-  vertices.append(v7);
-  vertices.append(v8);//Left
+  m_normals.append(QVector3D(0,-1,0));
+  m_vertices.append(v3);
+  m_vertices.append(v7);
+  m_vertices.append(v8);//Left
 
 
   for(int i = 0; i<3;++i)
-  normals.append(QVector3D(0,-1,0));
-  vertices.append(v3);//Left
-  vertices.append(v8);
-  vertices.append(v4);
+  m_normals.append(QVector3D(0,-1,0));
+  m_vertices.append(v3);//Left
+  m_vertices.append(v8);
+  m_vertices.append(v4);
 
   for(int i = 0; i<3;++i)
-  normals.append(QVector3D(0,0,1));
-  vertices.append(v5);//Top
-  vertices.append(v7);
-  vertices.append(v3);
+  m_normals.append(QVector3D(0,0,1));
+  m_vertices.append(v5);//Top
+  m_vertices.append(v7);
+  m_vertices.append(v3);
 
   for(int i = 0; i<3;++i)
-  normals.append(QVector3D(0,0,1));
-  vertices.append(v1);//Top
-  vertices.append(v5);
-  vertices.append(v3);
+  m_normals.append(QVector3D(0,0,1));
+  m_vertices.append(v1);//Top
+  m_vertices.append(v5);
+  m_vertices.append(v3);
 
   for(int i = 0; i<3;++i)
-  normals.append(QVector3D(1,0,0));
-  vertices.append(v1);//Fase
-  vertices.append(v4);
-  vertices.append(v2);
+  m_normals.append(QVector3D(1,0,0));
+  m_vertices.append(v1);//Fase
+  m_vertices.append(v4);
+  m_vertices.append(v2);
 
   for(int i = 0; i<3;++i)
-  normals.append(QVector3D(1,0,0));
-  vertices.append(v4);//Fase
-  vertices.append(v1);
-  vertices.append(v3);
+  m_normals.append(QVector3D(1,0,0));
+  m_vertices.append(v4);//Fase
+  m_vertices.append(v1);
+  m_vertices.append(v3);
 
   for(int i = 0; i<3;++i)
-  normals.append(QVector3D(0,1,0));
-  vertices.append(v1);//Right
-  vertices.append(v2);
-  vertices.append(v6);
+  m_normals.append(QVector3D(0,1,0));
+  m_vertices.append(v1);//Right
+  m_vertices.append(v2);
+  m_vertices.append(v6);
 
   for(int i = 0; i<3;++i)
-  normals.append(QVector3D(0,1,0));
-  vertices.append(v1);//Right
-  vertices.append(v6);
-  vertices.append(v5);
+  m_normals.append(QVector3D(0,1,0));
+  m_vertices.append(v1);//Right
+  m_vertices.append(v6);
+  m_vertices.append(v5);
 }

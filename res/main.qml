@@ -75,49 +75,35 @@ Window {
       }
       "
   }
+
   Row
   {
     Repeater
     {
-      model: 1
+      model: 3
 
       delegate:
-      Renderer
-      {
-        id: renderer
-
-        width: 400; height: 400
-
-        MouseArea
+        Renderer
         {
-          id: mouse
-          anchors.fill: parent
+          id: renderer
 
-          onClicked:
-            renderer.pressEvent()
+          width: 100
+          height: 100
+
+          MouseArea
+          {
+            id: _dragArea
+
+            drag.target: parent
+            anchors.fill: parent
+            drag.minimumX: 0
+            drag.minimumY: 0
+
+            onClicked:
+              renderer.pressEvent()
+
+          }
         }
-      }
     }
   }
-
-  // Just to show something interesting
-  /*SequentialAnimation {
-      PauseAnimation { duration: 5000 }
-      ParallelAnimation {
-          NumberAnimation { target: scale; property: "xScale"; to: 0.6; duration: 1000; easing.type: Easing.InOutBack }
-          NumberAnimation { target: scale; property: "yScale"; to: 0.6; duration: 1000; easing.type: Easing.InOutBack }
-      }
-      NumberAnimation { target: rotation; property: "angle"; to: 80; duration: 1000; easing.type: Easing.InOutCubic }
-      NumberAnimation { target: rotation; property: "angle"; to: -80; duration: 1000; easing.type: Easing.InOutCubic }
-      NumberAnimation { target: rotation; property: "angle"; to: 0; duration: 1000; easing.type: Easing.InOutCubic }
-      NumberAnimation { target: renderer; property: "opacity"; to: 0.5; duration: 1000; easing.type: Easing.InOutCubic }
-      PauseAnimation { duration: 1000 }
-      NumberAnimation { target: renderer; property: "opacity"; to: 0.8; duration: 1000; easing.type: Easing.InOutCubic }
-      ParallelAnimation {
-          NumberAnimation { target: scale; property: "xScale"; to: 1; duration: 1000; easing.type: Easing.InOutBack }
-          NumberAnimation { target: scale; property: "yScale"; to: 1; duration: 1000; easing.type: Easing.InOutBack }
-      }
-      running: true
-      loops: Animation.Infinite
-  }*/
 }

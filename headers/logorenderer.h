@@ -16,19 +16,24 @@ public:
   ~LogoRenderer();
   void render();
   void initialize();
+  void scale(const double sc);
+  //void set_angle(const double x_angle, const double y_angle, const double z_angle);
 
 private:
   void paint();
   void createGeometry();
 
 private:
-  QOpenGLShaderProgram program;
-  QVector<QVector3D> vertices;
-  QVector<QVector3D> normals;
-  qreal m_fAngle;
-  qreal m_fScale;
-  int vertexAttr;
-  int normalAttr;
-  int matrixUniform1;
+  QOpenGLShaderProgram m_program;
+  QVector<QVector3D> m_vertices;
+  QVector<QVector3D> m_normals;
+  double m_angle;
+//  double m_x_angle;
+//  double m_y_angle;
+//  double m_z_angle;
+  double m_scale;
+  int m_vertexAttr;
+  int m_normalAttr;
+  int m_matrixUniform;
 };
 #endif
