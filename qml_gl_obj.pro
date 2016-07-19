@@ -5,12 +5,12 @@ QT += qml quick
 CONFIG += c++14
 
 HEADERS += \
-         headers/logorenderer.h \
-    headers/fb_obj.h
+    headers/fb_obj.h \
+    headers/cube_renderer.h
 
 SOURCES += src/main.cpp \
-           src/logorenderer.cpp \
-    src/fb_obj.cpp
+    src/fb_obj.cpp \
+    src/cube_renderer.cpp
 
 RESOURCES += \
     qrs.qrc

@@ -9,11 +9,11 @@
 #include <QTime>
 #include <QVector>
 
-class LogoRenderer : protected QOpenGLFunctions
+class Cube_renderer : protected QOpenGLFunctions
 {
 public:
-  LogoRenderer();
-  ~LogoRenderer();
+  Cube_renderer();
+  ~Cube_renderer();
   void render();
   void initialize();
   void scale(const double sc);

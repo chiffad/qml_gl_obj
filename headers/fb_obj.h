@@ -2,7 +2,7 @@
 #define FBOINSGRENDERER_H
 
 #include <QtQuick/QQuickFramebufferObject>
-#include "headers/logorenderer.h"
+#include "headers/cube_renderer.h"
 
 class Fbo_renderer;
 
@@ -27,6 +27,6 @@ public:
   void scale(const double sc);
 
 private:
-  LogoRenderer logo;
+  Cube_renderer logo;
 };
 #endif
