@@ -6,6 +6,7 @@
 
 Fb_obj::~Fb_obj()
 {
+  delete renderer;
 }
 
 QQuickFramebufferObject::Renderer* Fb_obj::createRenderer() const
