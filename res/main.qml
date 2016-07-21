@@ -89,6 +89,7 @@ Window {
 
           width: 100
           height: 100
+        //  x: index * 30
 
           MouseArea
           {
@@ -100,7 +101,11 @@ Window {
             drag.minimumY: 0
 
             onClicked:
-              renderer.pressEvent()
+            {
+              //renderer.width *= 0.6
+              //renderer.height *= 0.6
+              //renderer.pressEvent()
+            }
 
           }
         }
