@@ -24,7 +24,7 @@ void Fb_obj::pressEvent()
 
 Fbo_renderer::Fbo_renderer()
 {
-  logo.initialize();
+  cube.initialize();
   update();
 }
 
@@ -38,11 +38,11 @@ QOpenGLFramebufferObject* Fbo_renderer::createFramebufferObject(const QSize &siz
 
 void Fbo_renderer::render()
 {
-  logo.render();
+  cube.render();
   update();
 }
 
 void Fbo_renderer::scale(const double sc)
 {
-  logo.scale(sc);
+  cube.scale(sc);
 }

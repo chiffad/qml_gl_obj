@@ -27,6 +27,6 @@ public:
   void scale(const double sc);
 
 private:
-  Cube_renderer logo;
+  Cube_renderer cube;
 };
 #endif
