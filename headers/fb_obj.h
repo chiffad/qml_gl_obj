@@ -10,23 +10,30 @@ class Fb_obj : public QQuickFramebufferObject
 {
   Q_OBJECT
 public:
+  Fb_obj();
   ~Fb_obj();
-  Renderer *createRenderer() const;
+  Renderer *createRenderer() const Q_DECL_OVERRIDE;
 
   Q_INVOKABLE void pressEvent();
 
-  mutable Fbo_renderer *renderer;
+  double get_scale() const;
+
+private:
+  double m_scale;
 };
 
 class Fbo_renderer : public QQuickFramebufferObject::Renderer
 {
 public:
   Fbo_renderer();
-  void render();
-  QOpenGLFramebufferObject* createFramebufferObject(const QSize &size);
-  void scale(const double sc);
+  ~Fbo_renderer();
+  QOpenGLFramebufferObject* createFramebufferObject(const QSize &size) Q_DECL_OVERRIDE;
+  void render() Q_DECL_OVERRIDE;
+  void synchronize(QQuickFramebufferObject *item) Q_DECL_OVERRIDE;
+  void scale_cube();
 
 private:
-  Cube_renderer cube;
+  Cube_renderer *cube;
+  double m_scale;
 };
 #endif

@@ -3,7 +3,7 @@
 #include <cmath>
 #include "headers/cube_renderer.h"
 
-Cube_renderer::Cube_renderer() : m_angle(0), m_scale(0.6)
+Cube_renderer::Cube_renderer() : m_angle(0), m_scale(1), m_vertexAttr(0), m_normalAttr(0), m_matrixUniform(0)
 {
 }
 
@@ -29,8 +29,9 @@ void Cube_renderer::initialize()
 {
   initializeOpenGLFunctions();
 
-  glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-
+  //glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+  glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+  
   QOpenGLShader *vshader = new QOpenGLShader(QOpenGLShader::Vertex, &m_program);
   const char *vsrc =
     "attribute highp vec4 vertex;\n"
@@ -73,14 +74,16 @@ void Cube_renderer::initialize()
 
 void Cube_renderer::scale(const double sc)
 {
-  m_scale *= sc;
+  m_scale = sc;
 }
 
 void Cube_renderer::render()
 {
   glDepthMask(true);
 
-  glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+  //glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+  glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+  
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );//?
@@ -115,15 +118,16 @@ void Cube_renderer::createGeometry()
   m_vertices.clear();
   m_normals.clear();
 
-  const QVector3D v1 = QVector3D(+1.0f, +1.0f, +1.0f);
-  const QVector3D v2 = QVector3D(+1.0f, +1.0f, -1.0f);
-  const QVector3D v3 = QVector3D(+1.0f, -1.0f, +1.0f);
-  const QVector3D v4 = QVector3D(+1.0f, -1.0f, -1.0f);
+  const float MAX_SIZE = 0.5;
+  const QVector3D v1 = QVector3D(+MAX_SIZE, +MAX_SIZE, +MAX_SIZE);
+  const QVector3D v2 = QVector3D(+MAX_SIZE, +MAX_SIZE, -MAX_SIZE);
+  const QVector3D v3 = QVector3D(+MAX_SIZE, -MAX_SIZE, +MAX_SIZE);
+  const QVector3D v4 = QVector3D(+MAX_SIZE, -MAX_SIZE, -MAX_SIZE);
 
-  const QVector3D v5 = QVector3D(-1.0f, +1.0f, +1.0f);
-  const QVector3D v6 = QVector3D(-1.0f, +1.0f, -1.0f);
-  const QVector3D v7 = QVector3D(-1.0f, -1.0f, +1.0f);
-  const QVector3D v8 = QVector3D(-1.0f, -1.0f, -1.0f);
+  const QVector3D v5 = QVector3D(-MAX_SIZE, +MAX_SIZE, +MAX_SIZE);
+  const QVector3D v6 = QVector3D(-MAX_SIZE, +MAX_SIZE, -MAX_SIZE);
+  const QVector3D v7 = QVector3D(-MAX_SIZE, -MAX_SIZE, +MAX_SIZE);
+  const QVector3D v8 = QVector3D(-MAX_SIZE, -MAX_SIZE, -MAX_SIZE);
 
   for(int i = 0; i<3;++i)
     m_normals.append(QVector3D(-1,0,0));

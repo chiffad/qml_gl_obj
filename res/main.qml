@@ -104,7 +104,7 @@ Window {
             {
               //renderer.width *= 0.6
               //renderer.height *= 0.6
-              //renderer.pressEvent()
+              renderer.pressEvent()
             }
 
           }
