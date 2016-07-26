@@ -1,5 +1,5 @@
-#ifndef LOGORENDERER_H
-#define LOGORENDERER_H
+#ifndef CUBERENDERER_H
+#define CUBERENDERER_H
 
 #include <QtGui/qvector3d.h>
 #include <QtGui/qmatrix4x4.h>
