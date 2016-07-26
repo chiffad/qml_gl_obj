@@ -16,22 +16,23 @@ public:
   ~Cube_renderer();
   void render();
   void initialize();
-  void scale(const double sc);
+  void set_cube_updates(const QVector3D scale_vect);
   //void set_angle(const double x_angle, const double y_angle, const double z_angle);
 
 private:
   void paint();
-  void createGeometry();
+  void create_geometry();
+  void update_modelview();
 
 private:
   QOpenGLShaderProgram m_program;
   QVector<QVector3D> m_vertices;
   QVector<QVector3D> m_normals;
-  double m_angle;
-//  double m_x_angle;
-//  double m_y_angle;
-//  double m_z_angle;
-  double m_scale;
+  QMatrix4x4 modelview;
+  float m_x_angle;
+  float m_y_angle;
+  float m_z_angle;
+  QVector3D m_scale_vect;
   int m_vertexAttr;
   int m_normalAttr;
   int m_matrixUniform;

@@ -28,6 +28,16 @@ double Fb_obj::get_scale() const
   return m_scale;
 }
 
+QString Fb_obj::get_fig_type() const
+{
+  return m_fig_type;
+}
+
+void Fb_obj::set_fig_type(const QString &name)
+{
+  m_fig_type = name;
+}
+
 //======================================================
 
 Fbo_renderer::Fbo_renderer() : cube(new Cube_renderer()), m_scale(1)
@@ -57,14 +67,15 @@ void Fbo_renderer::render()
 
 void Fbo_renderer::synchronize(QQuickFramebufferObject *item)
 {
-  qDebug()<<"synchronize";
-  Fb_obj *fbitem = static_cast<Fb_obj *>(item);
-  m_scale = fbitem->get_scale();
-  scale_cube();
+  Fb_obj *fb_item = static_cast<Fb_obj *>(item);
+  m_scale = fb_item->get_scale();
+  m_fig_type = fb_item->get_fig_type();
+  update_cube();
 }
 
-void Fbo_renderer::scale_cube()
+void Fbo_renderer::update_cube()
 {
-  cube->scale(m_scale);
-  //m_scale = 1;
+  QVector3D vect = m_fig_type == "board" ? QVector3D(1.5,0.25,1.5) : QVector3D(1,1,1);
+  vect *= m_scale;
+  cube->set_cube_updates(vect);
 }

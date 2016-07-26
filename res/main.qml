@@ -76,6 +76,20 @@ Window {
       "
   }
 
+  Renderer
+  {
+    id: board
+
+    anchors.fill: parent
+    fig_type: "board"
+
+    MouseArea
+    {
+      onClicked:
+        console.log("x is ", parent.mouseX, " y is: ", parent.mouseY )
+    }
+  }
+
   Row
   {
     Repeater
@@ -87,9 +101,10 @@ Window {
         {
           id: renderer
 
-          width: 100
-          height: 100
-        //  x: index * 30
+          width: 60
+          height: 60
+
+          fig_type: "cube"
 
           MouseArea
           {
@@ -100,13 +115,12 @@ Window {
             drag.minimumX: 0
             drag.minimumY: 0
 
-            onClicked:
+            /*onClicked:
             {
               //renderer.width *= 0.6
               //renderer.height *= 0.6
               renderer.pressEvent()
-            }
-
+            }*/
           }
         }
     }

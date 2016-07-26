@@ -3,7 +3,8 @@
 #include <cmath>
 #include "headers/cube_renderer.h"
 
-Cube_renderer::Cube_renderer() : m_angle(0), m_scale(1), m_vertexAttr(0), m_normalAttr(0), m_matrixUniform(0)
+Cube_renderer::Cube_renderer() : m_x_angle(-35), m_y_angle(10), m_z_angle(0), m_scale_vect(1,1,1),
+                                 m_vertexAttr(0), m_normalAttr(0), m_matrixUniform(0)
 {
 }
 
@@ -31,7 +32,7 @@ void Cube_renderer::initialize()
 
   //glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-  
+
   QOpenGLShader *vshader = new QOpenGLShader(QOpenGLShader::Vertex, &m_program);
   const char *vsrc =
     "attribute highp vec4 vertex;\n"
@@ -69,12 +70,23 @@ void Cube_renderer::initialize()
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 
-  createGeometry();
+  create_geometry();
 }
 
-void Cube_renderer::scale(const double sc)
+void Cube_renderer::set_cube_updates(const QVector3D scale_vect)
 {
-  m_scale = sc;
+  m_scale_vect = scale_vect;
+  update_modelview();
+  render();
+}
+
+void Cube_renderer::update_modelview()
+{
+  modelview.rotate(m_x_angle, 1.0f, 0.0f, 0.0f);
+  modelview.rotate(m_y_angle, 0.0f, 1.0f, 0.0f);
+  modelview.rotate(m_z_angle, 0.0f, 0.0f, 1.0f);
+  modelview.scale(m_scale_vect);
+  modelview.translate(0.0f, 0.0f, 0.0f);
 }
 
 void Cube_renderer::render()
@@ -83,7 +95,7 @@ void Cube_renderer::render()
 
   //glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-  
+
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );//?
@@ -94,24 +106,20 @@ void Cube_renderer::render()
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
 
-  QMatrix4x4 modelview;
-  modelview.rotate(m_angle, 1.0f, 0.0f, 0.0f);
-  modelview.rotate(m_angle, 0.0f, 1.0f, 0.0f);
-  modelview.rotate(m_angle, 0.0f, 0.0f, 1.0f);
-  modelview.scale(m_scale);
-  modelview.translate(0.0f, -0.2f, 0.0f);
-
   m_program.bind();
   m_program.setUniformValue(m_matrixUniform, modelview);
+ // update_modelview();
   paint();
   m_program.release();
   glDisable(GL_DEPTH_TEST);
   glDisable(GL_CULL_FACE);
 
-  m_angle += 1.0f;
+  m_x_angle += 1.0f;
+  m_y_angle += 1.0f;
+  m_z_angle += 1.0f;
 }
 
-void Cube_renderer::createGeometry()
+void Cube_renderer::create_geometry()
 {
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
@@ -129,73 +137,73 @@ void Cube_renderer::createGeometry()
   const QVector3D v7 = QVector3D(-MAX_SIZE, -MAX_SIZE, +MAX_SIZE);
   const QVector3D v8 = QVector3D(-MAX_SIZE, -MAX_SIZE, -MAX_SIZE);
 
-  for(int i = 0; i<3;++i)
+  for(int i = 0; i<3; ++i)
     m_normals.append(QVector3D(-1,0,0));
   m_vertices.append(v8);
   m_vertices.append(v7);
   m_vertices.append(v5);//Back
 
-  for(int i = 0; i<3;++i)
+  for(int i = 0; i<3; ++i)
     m_normals.append(QVector3D(-1,0,0));
   m_vertices.append(v8);
   m_vertices.append(v5);
   m_vertices.append(v6);//Back
 
-  for(int i = 0; i<3;++i)
+  for(int i = 0; i<3; ++i)
     m_normals.append(QVector3D(0,0,-1));
   m_vertices.append(v2);
   m_vertices.append(v8);
   m_vertices.append(v6);//Bottom
 
-  for(int i = 0; i<3;++i)
+  for(int i = 0; i<3; ++i)
     m_normals.append(QVector3D(0,0,-1));
   m_vertices.append(v2);
   m_vertices.append(v4);
   m_vertices.append(v8);//Bottom
 
-  for(int i = 0; i<3;++i)
+  for(int i = 0; i<3; ++i)
     m_normals.append(QVector3D(0,-1,0));
   m_vertices.append(v3);
   m_vertices.append(v7);
   m_vertices.append(v8);//Left
 
-  for(int i = 0; i<3;++i)
+  for(int i = 0; i<3; ++i)
     m_normals.append(QVector3D(0,-1,0));
   m_vertices.append(v3);//Left
   m_vertices.append(v8);
   m_vertices.append(v4);
 
-  for(int i = 0; i<3;++i)
+  for(int i = 0; i<3; ++i)
     m_normals.append(QVector3D(0,0,1));
   m_vertices.append(v5);//Top
   m_vertices.append(v7);
   m_vertices.append(v3);
 
-  for(int i = 0; i<3;++i)
+  for(int i = 0; i<3; ++i)
     m_normals.append(QVector3D(0,0,1));
   m_vertices.append(v1);//Top
   m_vertices.append(v5);
   m_vertices.append(v3);
 
-  for(int i = 0; i<3;++i)
+  for(int i = 0; i<3; ++i)
     m_normals.append(QVector3D(1,0,0));
   m_vertices.append(v1);//Fase
   m_vertices.append(v4);
   m_vertices.append(v2);
 
-  for(int i = 0; i<3;++i)
+  for(int i = 0; i<3; ++i)
     m_normals.append(QVector3D(1,0,0));
   m_vertices.append(v4);//Fase
   m_vertices.append(v1);
   m_vertices.append(v3);
 
-  for(int i = 0; i<3;++i)
+  for(int i = 0; i<3; ++i)
     m_normals.append(QVector3D(0,1,0));
   m_vertices.append(v1);//Right
   m_vertices.append(v2);
   m_vertices.append(v6);
 
-  for(int i = 0; i<3;++i)
+  for(int i = 0; i<3; ++i)
     m_normals.append(QVector3D(0,1,0));
   m_vertices.append(v1);//Right
   m_vertices.append(v6);
