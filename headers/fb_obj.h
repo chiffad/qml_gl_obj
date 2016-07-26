@@ -1,5 +1,5 @@
-#ifndef FBOINSGRENDERER_H
-#define FBOINSGRENDERER_H
+#ifndef FBORENDERER_H
+#define FBORENDERER_H
 
 #include <QtQuick/QQuickFramebufferObject>
 #include "headers/cube_renderer.h"
