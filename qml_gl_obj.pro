@@ -1,6 +1,7 @@
 TEMPLATE = app
 
 QT += qml quick
+QT += opengl
 
 CONFIG += c++14
 

@@ -23,9 +23,11 @@ private:
   void paint();
   void create_geometry();
   void update_modelview();
+  void generate_texture();
 
 private:
   QOpenGLShaderProgram m_program;
+  GLuint textures[1];
   QVector<QVector3D> m_vertices;
   QVector<QVector3D> m_normals;
   QMatrix4x4 modelview;

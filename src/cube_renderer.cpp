@@ -1,6 +1,7 @@
 #include <QPainter>
 #include <QPaintEngine>
 #include <cmath>
+#include <QGLWidget>
 #include "headers/cube_renderer.h"
 
 Cube_renderer::Cube_renderer() : m_x_angle(-35), m_y_angle(10), m_z_angle(0), m_scale_vect(1,1,1),
@@ -70,6 +71,11 @@ void Cube_renderer::initialize()
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 
+  glEnable(GL_TEXTURE_2D);
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+  generate_texture();
+
   create_geometry();
 }
 
@@ -117,6 +123,21 @@ void Cube_renderer::render()
   m_x_angle += 1.0f;
   m_y_angle += 1.0f;
   m_z_angle += 1.0f;
+}
+
+void Cube_renderer::generate_texture()
+{
+  glGenTextures(1, textures);
+
+  QImage boardIm;
+  boardIm.load("res/board.png");
+  boardIm = QGLWidget::convertToGLFormat(boardIm);
+  glBindTexture(GL_TEXTURE_2D, textures[0]);
+  glTexImage2D(GL_TEXTURE_2D, 0, 3, (GLsizei)boardIm.width(), (GLsizei)boardIm.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, boardIm.bits());
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 }
 
 void Cube_renderer::create_geometry()
@@ -208,4 +229,31 @@ void Cube_renderer::create_geometry()
   m_vertices.append(v1);//Right
   m_vertices.append(v6);
   m_vertices.append(v5);
+
+  glBindTexture(GL_TEXTURE_2D, textures[0]);
+
+  GLfloat cubeTextureArray[4][2];
+
+  cubeTextureArray[0][0] = 0.0;
+  cubeTextureArray[0][1] = 0.0;
+
+  cubeTextureArray[1][0] = 1.0;
+  cubeTextureArray[1][1] = 0.0;
+
+  cubeTextureArray[2][0] = 1.0;
+  cubeTextureArray[2][1] = 1.0;
+
+  cubeTextureArray[3][0] = 0.0;
+  cubeTextureArray[3][1] = 1.0;
+
+  GLubyte cubeIndexArray[4];
+
+  cubeIndexArray[0] = 0;
+  cubeIndexArray[1] = 3;
+  cubeIndexArray[2] = 2;
+  cubeIndexArray[3] = 1;
+
+  //glVertexPointer(3, GL_FLOAT, 0, m_vertices);
+  glTexCoordPointer(2, GL_FLOAT, 0, cubeTextureArray);
+  glDrawElements(GL_QUADS, 4, GL_UNSIGNED_BYTE, cubeIndexArray);
 }
