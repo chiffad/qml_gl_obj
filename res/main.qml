@@ -44,8 +44,14 @@ import QtQuick.Window 2.2
 import SceneGraphRendering 1.0
 
 Window {
-  width: 400
-  height: 400
+  height: 600
+  maximumHeight: height
+  minimumHeight: height
+
+  width: 600
+  maximumWidth: width
+  minimumWidth: width
+
   visible: true
 
   // The checkers background
@@ -85,8 +91,9 @@ Window {
 
     MouseArea
     {
+      anchors.fill: parent
       onClicked:
-        console.log("x is ", parent.mouseX, " y is: ", parent.mouseY )
+        console.log("x is ", mouseX, " y is: ", mouseY )
     }
   }
 

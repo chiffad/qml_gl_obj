@@ -5,6 +5,7 @@
 #include <QtGui/qmatrix4x4.h>
 #include <QtGui/qopenglshaderprogram.h>
 #include <QtGui/qopenglfunctions.h>
+#include <QOpenGLTexture>
 
 #include <QTime>
 #include <QVector>
@@ -23,14 +24,13 @@ private:
   void paint();
   void create_geometry();
   void update_modelview();
-  void generate_texture();
 
 private:
   QOpenGLShaderProgram m_program;
-  GLuint textures[1];
   QVector<QVector3D> m_vertices;
   QVector<QVector3D> m_normals;
   QMatrix4x4 modelview;
+  QOpenGLTexture *textures;
   float m_x_angle;
   float m_y_angle;
   float m_z_angle;
