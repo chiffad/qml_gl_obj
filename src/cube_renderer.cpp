@@ -7,216 +7,148 @@
 #include <QString>
 #include "headers/cube_renderer.h"
 
-Cube_renderer::Cube_renderer() : textures(new QOpenGLTexture(QImage("/home/chiffa/prj/qml_gl_obj/res/board.png"))),
-                                 m_x_angle(-35), m_y_angle(2), m_z_angle(0), m_scale_vect(1,1,1),
-                                 m_vertexAttr(0), m_normalAttr(0), m_matrixUniform(0)
+
+Cube_renderer::Cube_renderer() : m_board_texture(new QOpenGLTexture(QImage("/home/chiffa/prj/qml_gl_obj/res/board.png"))),
+                                 m_program(new QOpenGLShaderProgram), m_x_angle(-35), m_y_angle(2), m_z_angle(0),
+                                 m_scale_vect(1,1,1), m_VERTEX_ATTRIBUTE(0), m_TEXCOORD_ATTRIBUTE(1)
 {
+  qDebug()<<"Cube_renderer()";
 }
 
 Cube_renderer::~Cube_renderer()
 {
-  delete textures;
-}
-
-void Cube_renderer::paint()
-{
-  m_program.enableAttributeArray(m_normalAttr);
-  m_program.enableAttributeArray(m_vertexAttr);
-
-  m_program.setAttributeArray(m_vertexAttr, m_vertices.constData());
-  m_program.setAttributeArray(m_normalAttr, m_normals.constData());
-
-  //textures->bind();
-  //glDrawArrays(GL_TRIANGLE_FAN, 4, 4);
-
-  glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
-
-  m_program.disableAttributeArray(m_normalAttr);
-  m_program.disableAttributeArray(m_vertexAttr);
+  qDebug()<<"~Cube_renderer()";
+  delete m_board_texture;
+  delete m_program;
 }
 
 void Cube_renderer::initialize()
 {
-  initializeOpenGLFunctions();
+  qDebug()<<"initialize()";
 
+  initializeOpenGLFunctions();
   //glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-  QOpenGLShader *vshader = new QOpenGLShader(QOpenGLShader::Vertex, &m_program);
+  QOpenGLShader *vshader = new QOpenGLShader(QOpenGLShader::Vertex, m_program);
   const char *vsrc =
-    "attribute highp vec4 vertex;\n"
-    "attribute mediump vec3 normal;\n"
-    "uniform mediump mat4 matrix;\n"
-    "varying mediump vec4 color;\n"
-    "void main(void)\n"
-    "{\n"
-    "    vec3 toLight = normalize(vec3(0.0, 0.3, 1.0));\n"
-    "    float angle = max(dot(normal, toLight), 0.4);\n"
-    "    vec3 col = vec3(0.40, 1.0, 0.0);\n"
-    "    color = vec4(col * 0.2 + col * 0.8 * angle, 1.0);\n"
-    "    color = clamp(color, 0.0, 1.0);\n"
-    "    gl_Position = matrix * vertex;\n"
-    "}\n";
+      "attribute highp vec4 vertex;\n"
+      "attribute mediump vec4 texCoord;\n"
+      "varying mediump vec4 texc;\n"
+      "uniform mediump mat4 matrix;\n"
+      "void main(void)\n"
+      "{\n"
+      "    gl_Position = matrix * vertex;\n"
+      "    texc = texCoord;\n"
+      "}\n";
   vshader->compileSourceCode(vsrc);
 
-  QOpenGLShader *fshader = new QOpenGLShader(QOpenGLShader::Fragment, &m_program);
+  QOpenGLShader *fshader = new QOpenGLShader(QOpenGLShader::Fragment, m_program);
   const char *fsrc =
-    "varying mediump vec4 color;\n"
-    "void main(void)\n"
-    "{\n"
-    "    gl_FragColor = color;\n"
-    "}\n";
+      "uniform sampler2D texture;\n"
+      "varying mediump vec4 texc;\n"
+      "void main(void)\n"
+      "{\n"
+      "    gl_FragColor = texture2D(texture, texc.st);\n"
+      "}\n";
   fshader->compileSourceCode(fsrc);
 
-  m_program.addShader(vshader);
-  m_program.addShader(fshader);
-  m_program.link();
+  m_program->addShader(vshader);
+  m_program->addShader(fshader);
+  m_program->bindAttributeLocation("vertex", m_VERTEX_ATTRIBUTE);
+  m_program->bindAttributeLocation("texCoord", m_TEXCOORD_ATTRIBUTE);
+  m_program->link();
+  m_program->bind();
+  m_program->setUniformValue("texture", 0);
 
-  m_vertexAttr = m_program.attributeLocation("vertex");
-  m_normalAttr = m_program.attributeLocation("normal");
-  m_matrixUniform = m_program.uniformLocation("matrix");
-
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+  //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+  //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 
   create_geometry();
+  qDebug()<<"initialize()";
 }
 
 void Cube_renderer::set_cube_updates(const QVector3D scale_vect)
 {
+  qDebug()<<"set_cube_updates";
   m_scale_vect = scale_vect;
   update_modelview();
   render();
+  qDebug()<<"set_cube_updates";
 }
 
 void Cube_renderer::update_modelview()
 {
+  qDebug()<<"update_modelview()";
   modelview.rotate(m_x_angle, 1.0f, 0.0f, 0.0f);
   modelview.rotate(m_y_angle, 0.0f, 1.0f, 0.0f);
   modelview.rotate(m_z_angle, 0.0f, 0.0f, 1.0f);
   modelview.scale(m_scale_vect);
   modelview.translate(0.0f, 0.0f, 0.0f);
+  qDebug()<<"update_modelview()";
 }
 
 void Cube_renderer::render()
 {
+  qDebug()<<"render()";
   glDepthMask(true);
 
   //glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );//?
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+  QMatrix4x4 m;
+  m.ortho(-0.5f, +0.5f, +0.5f, -0.5f, 4.0f, 15.0f);
+  m.translate(0.0f, 0.0f, -10.0f);
+  m.rotate(-35.0f, 1.0f, 0.0f, 0.0f);
+  m.rotate(2.0f, 0.0f, 1.0f, 0.0f);
+  //m.rotate(zRot / 16.0f, 0.0f, 0.0f, 1.0f);
+  initializeOpenGLFunctions();
 
-  glFrontFace(GL_CW);
-  glCullFace(GL_FRONT);
-  glEnable(GL_CULL_FACE);
-  glEnable(GL_DEPTH_TEST);
+  m_program->setUniformValue("matrix", m);
+  m_program->enableAttributeArray(m_VERTEX_ATTRIBUTE);
+  m_program->enableAttributeArray(m_TEXCOORD_ATTRIBUTE);
+  m_program->setAttributeBuffer(m_VERTEX_ATTRIBUTE, GL_FLOAT, 0, 3, 5 * sizeof(GLfloat));
+  m_program->setAttributeBuffer(m_TEXCOORD_ATTRIBUTE, GL_FLOAT, 3 * sizeof(GLfloat), 2, 5 * sizeof(GLfloat));
 
-  m_program.bind();
-  m_program.setUniformValue(m_matrixUniform, modelview);
- // update_modelview();
+  m_board_texture->bind();
 
-  paint();
-
-  m_program.release();
-  glDisable(GL_DEPTH_TEST);
-  glDisable(GL_CULL_FACE);
+  for(int i = 0; i < SIDES; ++i)
+    glDrawArrays(GL_TRIANGLE_FAN, i * VERTEX, VERTEX);
 
   m_x_angle += 1.0f;
   m_y_angle += 1.0f;
   m_z_angle += 1.0f;
+  qDebug()<<"render()";
 }
 
 void Cube_renderer::create_geometry()
 {
-  glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+  qDebug()<<"create_geometry()";
+  static const int coords[SIDES][VERTEX][VERT_COORD] = {
+      { { +1, -1, -1 }, { -1, -1, -1 }, { -1, +1, -1 }, { +1, +1, -1 } },
+      { { +1, +1, -1 }, { -1, +1, -1 }, { -1, +1, +1 }, { +1, +1, +1 } },
+      { { +1, -1, +1 }, { +1, -1, -1 }, { +1, +1, -1 }, { +1, +1, +1 } },
+      { { -1, -1, -1 }, { -1, -1, +1 }, { -1, +1, +1 }, { -1, +1, -1 } },
+      { { +1, -1, +1 }, { -1, -1, +1 }, { -1, -1, -1 }, { +1, -1, -1 } },
+      { { -1, -1, +1 }, { +1, -1, +1 }, { +1, +1, +1 }, { -1, +1, +1 } }
+  };
 
-  m_vertices.clear();
-  m_normals.clear();
+  QVector<GLfloat> vertData;
+  for(int i = 0; i < SIDES; ++i)
+    for(int j = 0; j < VERTEX; ++j)
+    {
+      // vertex position
+      vertData.append(0.2 * coords[i][j][0]);
+      vertData.append(0.2 * coords[i][j][1]);
+      vertData.append(0.2 * coords[i][j][2]);
+      // texture coordinate
+      vertData.append(j == 0 || j == 3);
+      vertData.append(j == 0 || j == 1);
+    }
 
-  const float MAX_SIZE = 0.5;
-  const QVector3D v1 = QVector3D(+MAX_SIZE, +MAX_SIZE, +MAX_SIZE);
-  const QVector3D v2 = QVector3D(+MAX_SIZE, +MAX_SIZE, -MAX_SIZE);
-  const QVector3D v3 = QVector3D(+MAX_SIZE, -MAX_SIZE, +MAX_SIZE);
-  const QVector3D v4 = QVector3D(+MAX_SIZE, -MAX_SIZE, -MAX_SIZE);
-
-  const QVector3D v5 = QVector3D(-MAX_SIZE, +MAX_SIZE, +MAX_SIZE);
-  const QVector3D v6 = QVector3D(-MAX_SIZE, +MAX_SIZE, -MAX_SIZE);
-  const QVector3D v7 = QVector3D(-MAX_SIZE, -MAX_SIZE, +MAX_SIZE);
-  const QVector3D v8 = QVector3D(-MAX_SIZE, -MAX_SIZE, -MAX_SIZE);
-
-  for(int i = 0; i<3; ++i)
-    m_normals.append(QVector3D(-1,0,0));
-  m_vertices.append(v8);
-  m_vertices.append(v7);
-  m_vertices.append(v5);//Back
-
-  for(int i = 0; i<3; ++i)
-    m_normals.append(QVector3D(-1,0,0));
-  m_vertices.append(v8);
-  m_vertices.append(v5);
-  m_vertices.append(v6);//Back
-
-  for(int i = 0; i<3; ++i)
-    m_normals.append(QVector3D(0,0,-1));
-  m_vertices.append(v2);
-  m_vertices.append(v8);
-  m_vertices.append(v6);//Bottom
-
-  for(int i = 0; i<3; ++i)
-    m_normals.append(QVector3D(0,0,-1));
-  m_vertices.append(v2);
-  m_vertices.append(v4);
-  m_vertices.append(v8);//Bottom
-
-  for(int i = 0; i<3; ++i)
-    m_normals.append(QVector3D(0,-1,0));
-  m_vertices.append(v3);
-  m_vertices.append(v7);
-  m_vertices.append(v8);//Left
-
-  for(int i = 0; i<3; ++i)
-    m_normals.append(QVector3D(0,-1,0));
-  m_vertices.append(v3);//Left
-  m_vertices.append(v8);
-  m_vertices.append(v4);
-
-  for(int i = 0; i<3; ++i)
-    m_normals.append(QVector3D(0,0,1));
-  m_vertices.append(v5);//Top
-  m_vertices.append(v7);
-  m_vertices.append(v3);
-
-  for(int i = 0; i<3; ++i)
-    m_normals.append(QVector3D(0,0,1));
-  m_vertices.append(v1);//Top
-  m_vertices.append(v5);
-  m_vertices.append(v3);
-
-  for(int i = 0; i<3; ++i)
-    m_normals.append(QVector3D(1,0,0));
-  m_vertices.append(v1);//Fase
-  m_vertices.append(v4);
-  m_vertices.append(v2);
-
-  for(int i = 0; i<3; ++i)
-    m_normals.append(QVector3D(1,0,0));
-  m_vertices.append(v4);//Fase
-  m_vertices.append(v1);
-  m_vertices.append(v3);
-
-  for(int i = 0; i<3; ++i)
-    m_normals.append(QVector3D(0,1,0));
-  m_vertices.append(v1);//Right
-  m_vertices.append(v2);
-  m_vertices.append(v6);
-
-  for(int i = 0; i<3; ++i)
-    m_normals.append(QVector3D(0,1,0));
-  m_vertices.append(v1);//Right
-  m_vertices.append(v6);
-  m_vertices.append(v5);
+  m_buffer.create();
+  m_buffer.bind();
+  m_buffer.allocate(vertData.constData(), vertData.count() * sizeof(GLfloat));
+  qDebug()<<"create_geometry()";
 }

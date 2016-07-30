@@ -6,6 +6,7 @@
 #include <QtGui/qopenglshaderprogram.h>
 #include <QtGui/qopenglfunctions.h>
 #include <QOpenGLTexture>
+#include <QOpenGLBuffer>
 
 #include <QTime>
 #include <QVector>
@@ -13,7 +14,7 @@
 class Cube_renderer : protected QOpenGLFunctions
 {
 public:
-  Cube_renderer();
+  explicit Cube_renderer();
   ~Cube_renderer();
   void render();
   void initialize();
@@ -21,22 +22,26 @@ public:
   //void set_angle(const double x_angle, const double y_angle, const double z_angle);
 
 private:
-  void paint();
   void create_geometry();
   void update_modelview();
 
 private:
-  QOpenGLShaderProgram m_program;
-  QVector<QVector3D> m_vertices;
-  QVector<QVector3D> m_normals;
+   enum CUBE_CHARACteRS{VERT_COORD = 3, VERTEX = 4, SIDES = 6};
+
+private:
+  QOpenGLTexture *m_board_texture;
+  QOpenGLShaderProgram *m_program;
+
+
   QMatrix4x4 modelview;
-  QOpenGLTexture *textures;
+  QOpenGLBuffer m_buffer;
+
   float m_x_angle;
   float m_y_angle;
   float m_z_angle;
   QVector3D m_scale_vect;
-  int m_vertexAttr;
-  int m_normalAttr;
-  int m_matrixUniform;
+
+  const int m_VERTEX_ATTRIBUTE;
+  const int m_TEXCOORD_ATTRIBUTE;
 };
 #endif
