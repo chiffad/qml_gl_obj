@@ -75,7 +75,7 @@ void Fbo_renderer::synchronize(QQuickFramebufferObject *item)
 
 void Fbo_renderer::update_cube()
 {
-  QVector3D vect = m_fig_type == "board" ? QVector3D(1.5,0.25,1.5) : QVector3D(1,1,1);
+  QVector3D vect = m_fig_type == "board" ? QVector3D(1,1,0.06) : QVector3D(1,1,1);
   vect *= m_scale;
   cube->set_cube_updates(vect);
 }
