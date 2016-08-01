@@ -29,7 +29,7 @@ private:
    enum CUBE_CHARACteRS{VERT_COORD = 3, VERTEX = 4, SIDES = 6};
 
 private:
-  QOpenGLTexture *m_board_texture;
+  QVector<QOpenGLTexture*> m_board_texture;
   QOpenGLShaderProgram *m_program;
 
   QMatrix4x4 modelview;

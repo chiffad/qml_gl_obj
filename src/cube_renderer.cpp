@@ -9,16 +9,18 @@
 #include "headers/cube_renderer.h"
 
 
-Cube_renderer::Cube_renderer() : m_board_texture(new QOpenGLTexture(QImage("/home/chiffa/prj/qml_gl_obj/res/board.png"))),
-                                 m_program(new QOpenGLShaderProgram), m_x_angle(-30), m_y_angle(0), m_z_angle(0),
+Cube_renderer::Cube_renderer() : m_program(new QOpenGLShaderProgram), m_x_angle(-30), m_y_angle(0), m_z_angle(0),
                                  m_scale_vect(1,1,1), m_VERTEX_ATTRIBUTE(0), m_TEXCOORD_ATTRIBUTE(1)
 {
+  m_board_texture.append(new QOpenGLTexture(QImage("/home/chiffa/prj/qml_gl_obj/res/board.png").mirrored()));
+  m_board_texture.append(new QOpenGLTexture(QImage("/home/chiffa/prj/qml_gl_obj/res/board_side_2.jpg").mirrored()));
   update_modelview();
 }
 
 Cube_renderer::~Cube_renderer()
 {
-  delete m_board_texture;
+  for(auto &i : m_board_texture)
+    delete i;
   delete m_program;
 }
 
@@ -95,34 +97,27 @@ void Cube_renderer::render()
   m_program->setUniformValue("matrix", modelview);
   m_program->enableAttributeArray(m_VERTEX_ATTRIBUTE);
   m_program->enableAttributeArray(m_TEXCOORD_ATTRIBUTE);
-  m_program->setAttributeBuffer(m_VERTEX_ATTRIBUTE, GL_FLOAT,   0                   , 3, 3 * sizeof(GLfloat));
-  m_program->setAttributeBuffer(m_TEXCOORD_ATTRIBUTE, GL_FLOAT, 54 * sizeof(GLfloat), 2, 2 * sizeof(GLfloat));
+  m_program->setAttributeBuffer(m_VERTEX_ATTRIBUTE, GL_FLOAT,   0                  , 3, 5 * sizeof(GLfloat));
+  m_program->setAttributeBuffer(m_TEXCOORD_ATTRIBUTE, GL_FLOAT, 3 * sizeof(GLfloat), 2, 5 * sizeof(GLfloat));
 
-  //m_program->setAttributeBuffer(m_TEXCOORD_ATTRIBUTE,
-//                                  GL_FLOAT,
-//                                  3 * sizeof(GLfloat), -> where start
-//                                  2,                   -> number of components per vertex
-//                                  5 * sizeof(GLfloat)); -> step betwin  vertexes
-
-  m_board_texture->bind();
+  m_board_texture[0]->bind();
 
   for(int i = 0; i < SIDES; ++i)
+  {
+    if(i) m_board_texture[1]->bind();
     glDrawArrays(GL_TRIANGLE_FAN, i * VERTEX, VERTEX);
+  }
 }
 
 void Cube_renderer::create_geometry()
 {
-  QVector<GLfloat> vert_data = {+1, -1, -1,   -1, -1, -1,   -1, +1, -1,   +1, +1, -1,
-                                +1, +1, -1,   -1, +1, -1,   -1, +1, +1,   +1, +1, +1,
-                                +1, -1, +1,   +1, -1, -1,   +1, +1, -1,   +1, +1, +1,
-                                -1, -1, -1,   -1, -1, +1,   -1, +1, +1,   -1, +1, -1,
-                                +1, -1, +1,   -1, -1, +1,   -1, -1, -1,   +1, -1, -1,
-                                -1, -1, +1,   +1, -1, +1,   +1, +1, +1,   -1, +1, +1 };
-
-  std::for_each(vert_data.begin(), vert_data.end(), [](auto& i){i *= 0.8;});
-
-  QVector<GLfloat> texture_vert_data = {1, 1,  1, 0,  0, 1,  0, 0};
-  vert_data.append(texture_vert_data);
+  const GLfloat v = 0.8;
+  QVector<GLfloat> vert_data = {+v, -v, -v,   1, 1,   -v, -v, -v,   0,1,   -v, +v, -v,   0,0,   +v, +v, -v,   1,0,
+                                +v, +v, -v,   1, 1,   -v, +v, -v,   0,1,   -v, +v, +v,   0,0,   +v, +v, +v,   1,0,
+                                +v, -v, +v,   1, 1,   +v, -v, -v,   0,1,   +v, +v, -v,   0,0,   +v, +v, +v,   1,0,
+                                -v, -v, -v,   1, 1,   -v, -v, +v,   0,1,   -v, +v, +v,   0,0,   -v, +v, -v,   1,0,
+                                +v, -v, +v,   1, 1,   -v, -v, +v,   0,1,   -v, -v, -v,   0,0,   +v, -v, -v,   1,0,
+                                -v, -v, +v,   1, 1,   +v, -v, +v,   0,1,   +v, +v, +v,   0,0,   -v, +v, +v,   1,0};
 
   m_buffer.create();
   m_buffer.bind();

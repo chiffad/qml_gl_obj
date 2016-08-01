@@ -97,39 +97,40 @@ Window {
     }
   }
 
-  Row
+  Repeater
   {
-    Repeater
-    {
-      model: 3
+    model: 3
 
-      delegate:
-        Renderer
+    delegate:
+      Renderer
+      {
+        id: renderer
+
+        width: 60
+        height: 60
+
+        x: 60 * (index + 1)
+        y: 350 - 3
+
+        fig_type: "cube"
+
+        MouseArea
         {
-          id: renderer
+          id: _dragArea
 
-          width: 60
-          height: 60
+          drag.target: parent
+          anchors.fill: parent
+          drag.minimumX: 0
+          drag.minimumY: 0
 
-          fig_type: "cube"
-
-          MouseArea
+          onClicked:
           {
-            id: _dragArea
-
-            drag.target: parent
-            anchors.fill: parent
-            drag.minimumX: 0
-            drag.minimumY: 0
-
-            onClicked:
-            {
-              renderer.width *= 1.6
-              renderer.height *= 1.6
-              //renderer.pressEvent()
-            }
+            renderer.width *= 1.6
+            renderer.height *= 1.6
+            //renderer.pressEvent()
           }
         }
-    }
+      }
+
   }
 }

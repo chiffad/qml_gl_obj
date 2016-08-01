@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>res/main.qml</file>
         <file>res/board.png</file>
+        <file>res/board_side_2.jpg</file>
     </qresource>
 </RCC>
