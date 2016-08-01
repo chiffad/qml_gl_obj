@@ -5,6 +5,7 @@
 #include <QOpenGLTexture>
 #include <QImage>
 #include <QString>
+#include <algorithm>
 #include "headers/cube_renderer.h"
 
 
@@ -63,9 +64,6 @@ void Cube_renderer::initialize()
   m_program->link();
   m_program->bind();
   m_program->setUniformValue("texture", 0);
-
-  //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-  //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 }
 
 void Cube_renderer::set_cube_updates(const QVector3D scale_vect)
@@ -97,8 +95,14 @@ void Cube_renderer::render()
   m_program->setUniformValue("matrix", modelview);
   m_program->enableAttributeArray(m_VERTEX_ATTRIBUTE);
   m_program->enableAttributeArray(m_TEXCOORD_ATTRIBUTE);
-  m_program->setAttributeBuffer(m_VERTEX_ATTRIBUTE, GL_FLOAT, 0, 3, 5 * sizeof(GLfloat));
-  m_program->setAttributeBuffer(m_TEXCOORD_ATTRIBUTE, GL_FLOAT, 3 * sizeof(GLfloat), 2, 5 * sizeof(GLfloat));
+  m_program->setAttributeBuffer(m_VERTEX_ATTRIBUTE, GL_FLOAT,   0                   , 3, 3 * sizeof(GLfloat));
+  m_program->setAttributeBuffer(m_TEXCOORD_ATTRIBUTE, GL_FLOAT, 54 * sizeof(GLfloat), 2, 2 * sizeof(GLfloat));
+
+  //m_program->setAttributeBuffer(m_TEXCOORD_ATTRIBUTE,
+//                                  GL_FLOAT,
+//                                  3 * sizeof(GLfloat), -> where start
+//                                  2,                   -> number of components per vertex
+//                                  5 * sizeof(GLfloat)); -> step betwin  vertexes
 
   m_board_texture->bind();
 
@@ -108,29 +112,19 @@ void Cube_renderer::render()
 
 void Cube_renderer::create_geometry()
 {
-  static const int coords[SIDES][VERTEX][VERT_COORD] = {
-      { { +1, -1, -1 }, { -1, -1, -1 }, { -1, +1, -1 }, { +1, +1, -1 } },
-      { { +1, +1, -1 }, { -1, +1, -1 }, { -1, +1, +1 }, { +1, +1, +1 } },
-      { { +1, -1, +1 }, { +1, -1, -1 }, { +1, +1, -1 }, { +1, +1, +1 } },
-      { { -1, -1, -1 }, { -1, -1, +1 }, { -1, +1, +1 }, { -1, +1, -1 } },
-      { { +1, -1, +1 }, { -1, -1, +1 }, { -1, -1, -1 }, { +1, -1, -1 } },
-      { { -1, -1, +1 }, { +1, -1, +1 }, { +1, +1, +1 }, { -1, +1, +1 } }
-  };
+  QVector<GLfloat> vert_data = {+1, -1, -1,   -1, -1, -1,   -1, +1, -1,   +1, +1, -1,
+                                +1, +1, -1,   -1, +1, -1,   -1, +1, +1,   +1, +1, +1,
+                                +1, -1, +1,   +1, -1, -1,   +1, +1, -1,   +1, +1, +1,
+                                -1, -1, -1,   -1, -1, +1,   -1, +1, +1,   -1, +1, -1,
+                                +1, -1, +1,   -1, -1, +1,   -1, -1, -1,   +1, -1, -1,
+                                -1, -1, +1,   +1, -1, +1,   +1, +1, +1,   -1, +1, +1 };
 
-  QVector<GLfloat> vertData;
-  for(int i = 0; i < SIDES; ++i)
-    for(int j = 0; j < VERTEX; ++j)
-    {
-      // vertex position
-      vertData.append(0.8 * coords[i][j][0]);
-      vertData.append(0.8 * coords[i][j][1]);
-      vertData.append(0.8 * coords[i][j][2]);
-      // texture coordinate
-      vertData.append(j == 0 || j == 3);
-      vertData.append(j == 0 || j == 1);
-    }
+  std::for_each(vert_data.begin(), vert_data.end(), [](auto& i){i *= 0.8;});
+
+  QVector<GLfloat> texture_vert_data = {1, 1,  1, 0,  0, 1,  0, 0};
+  vert_data.append(texture_vert_data);
 
   m_buffer.create();
   m_buffer.bind();
-  m_buffer.allocate(vertData.constData(), vertData.count() * sizeof(GLfloat));
+  m_buffer.allocate(vert_data.constData(), vert_data.count() * sizeof(GLfloat));
 }

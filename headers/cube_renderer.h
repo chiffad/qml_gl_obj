@@ -32,7 +32,6 @@ private:
   QOpenGLTexture *m_board_texture;
   QOpenGLShaderProgram *m_program;
 
-
   QMatrix4x4 modelview;
   QOpenGLBuffer m_buffer;
 

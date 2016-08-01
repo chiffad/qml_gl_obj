@@ -122,12 +122,12 @@ Window {
             drag.minimumX: 0
             drag.minimumY: 0
 
-            /*onClicked:
+            onClicked:
             {
-              //renderer.width *= 0.6
-              //renderer.height *= 0.6
-              renderer.pressEvent()
-            }*/
+              renderer.width *= 1.6
+              renderer.height *= 1.6
+              //renderer.pressEvent()
+            }
           }
         }
     }
