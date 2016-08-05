@@ -99,7 +99,7 @@ Window {
 
   Repeater
   {
-    model: 3
+    model: ContextProperty.bar
 
     delegate:
       Renderer
