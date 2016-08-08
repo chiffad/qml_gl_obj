@@ -12,8 +12,8 @@
 Cube_renderer::Cube_renderer() : m_program(new QOpenGLShaderProgram), m_x_angle(-30), m_y_angle(0), m_z_angle(0),
                                  m_scale_vect(1,1,1), m_VERTEX_ATTRIBUTE(0), m_TEXCOORD_ATTRIBUTE(1)
 {
-  m_board_texture.append(new QOpenGLTexture(QImage("qml_gl_obj/res/board.png").mirrored()));
-  m_board_texture.append(new QOpenGLTexture(QImage("qml_gl_obj/res/board_side_2.jpg").mirrored()));
+  m_board_texture.append(new QOpenGLTexture(QImage("../qml_gl_obj/res/board.png").mirrored()));
+  m_board_texture.append(new QOpenGLTexture(QImage("../qml_gl_obj/res/board_side_2.jpg").mirrored()));
   update_modelview();
 }
 

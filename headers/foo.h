@@ -7,7 +7,7 @@ class Foo : public QObject
   Q_OBJECT
 public:
     Foo(QObject* paret = 0) : QObject(paret)
-    {m_bar = 1;}
+    {m_bar = 5;}
     Q_PROPERTY(int bar READ bar NOTIFY barChanged)
     int bar()const {return m_bar;}
 
